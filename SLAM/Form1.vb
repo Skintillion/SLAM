@@ -8,6 +8,7 @@ Imports SLAM.SourceGame
 Imports System.Management
 Imports System.Net.Http
 Imports NReco.VideoConverter
+Imports NAudio.Wave.SampleProviders
 
 Public Class Form1
 
@@ -21,8 +22,14 @@ Public Class Form1
     Const SEARCHING = -2
     Const WORKING = -3
 
+    Private currentWaveOut As WaveOut
+    Private virtualMicDeviceInIndex As Integer = -1
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        PopulateAudioDeviceDropdowns()
+
+
         RefreshPlayKey()
         If My.Settings.PlayKey = My.Settings.RelayKey Then
             My.Settings.RelayKey = "="
@@ -33,88 +40,17 @@ Public Class Form1
             CheckForUpdate()
         End If
 
-        Dim csgo As New SourceGame
-        csgo.name = "Counter-Strike: Global Offensive"
-        csgo.id = 730
-        csgo.directory = "common\Counter-Strike Global Offensive\"
-        csgo.ToCfg = "csgo\cfg\"
-        csgo.libraryname = "csgo\"
-        csgo.exename = "csgo"
-        csgo.samplerate = 22050
-        csgo.blacklist.AddRange({"attack", "attack2", "autobuy", "back", "buy", "buyammo1", "buyammo2", "buymenu", "callvote", "cancelselect", "cheer", "compliment", "coverme", "drop", "duck", "enemydown", "enemyspot", "fallback", "followme", "forward", "getout", "go", "holdpos", "inposition", "invnext", "invprev", "jump", "lastinv", "messagemode", "messagemode2", "moveleft", "moveright", "mute", "negative", "quit", "radio1", "radio2", "radio3", "rebuy", "regroup", "reload", "report", "reportingin", "roger", "sectorclear", "showscores", "slot1", "slot10", "slot2", "slot3", "slot4", "slot5", "slot6", "slot7", "slot8", "slot9", "speed", "sticktog", "takepoint", "takingfire", "teammenu", "thanks", "toggleconsole", "use", "voicerecord"})
-        csgo.VoiceFadeOut = False
-        Games.Add(csgo)
-
-        Dim css As New SourceGame
-        css.name = "Counter-Strike: Source"
-        css.directory = "common\Counter-Strike Source\"
-        css.ToCfg = "cstrike\cfg\"
-        css.libraryname = "css\"
-        css.blacklist.AddRange({"attack", "attack2", "back", "boom", "buyammo1", "buyammo2", "buyequip", "buymenu", "cancelselect", "cheer", "chooseteam", "commandmenu", "disconnect", "drop", "duck", "forward", "invnext", "invprev", "jump", "messagemode", "messagemode2", "moveleft", "moveright", "pause", "reload", "showbriefing", "showscores", "slot1", "slot10", "slot2", "slot3", "slot4", "slot5", "slot6", "slot7", "slot8", "slot9", "speed", "toggleconsole", "use"})
-        Games.Add(css)
-
-        Dim tf2 As New SourceGame
-        tf2.name = "Team Fortress 2"
-        tf2.directory = "common\Team Fortress 2\"
-        tf2.ToCfg = "tf\cfg\"
-        tf2.libraryname = "tf2\"
-        tf2.samplerate = 22050
-        tf2.blacklist.AddRange({"attack", "attack2", "attack3", "back", "build", "cancelselect", "centerview", "changeclass", "changeteam", "disguiseteam", "duck", "forward", "grab", "invnext", "invprev", "jump", "kill", "klook", "lastdisguise", "lookdown", "lookup", "moveleft", "moveright", "moveup", "pause", "quit", "reload", "say", "screenshot", "showmapinfo", "showroundinfo", "showscores", "slot1", "slot10", "slot2", "slot3", "slot4", "slot5", "slot6", "slot7", "slot8", "slot9", "strafe", "toggleconsole", "voicerecord"})
-        Games.Add(tf2)
-
-        Dim gmod As New SourceGame
-        gmod.name = "Garry's Mod"
-        gmod.directory = "common\GarrysMod\"
-        gmod.ToCfg = "garrysmod\cfg\"
-        gmod.libraryname = "gmod\"
-        Games.Add(gmod)
-
-        Dim hl2dm As New SourceGame
-        hl2dm.name = "Half-Life 2 Deathmatch"
-        hl2dm.directory = "common\half-life 2 deathmatch\"
-        hl2dm.ToCfg = "hl2mp\cfg\"
-        hl2dm.libraryname = "hl2dm\"
-        Games.Add(hl2dm)
-
-        Dim l4d As New SourceGame
-        l4d.name = "Left 4 Dead"
-        l4d.directory = "common\Left 4 Dead\"
-        l4d.ToCfg = "left4dead\cfg\"
-        l4d.libraryname = "l4d\"
-        l4d.exename = "left4dead"
-        Games.Add(l4d)
-
-        Dim l4d2 As New SourceGame
-        l4d2.name = "Left 4 Dead 2"
-        l4d2.directory = "common\Left 4 Dead 2\"
-        l4d2.ToCfg = "left4dead2\cfg\"
-        l4d2.libraryname = "l4d2\"
-        l4d2.exename = "left4dead2"
-        l4d2.VoiceFadeOut = False
-        Games.Add(l4d2)
-
-        Dim dods As New SourceGame
-        dods.name = "Day of Defeat Source"
-        dods.directory = "common\day of defeat source\"
-        dods.ToCfg = "dod\cfg\"
-        dods.libraryname = "dods\"
-        Games.Add(dods)
-
-        'NEEDS EXENAME!!!
-        'Dim goldeye As New SourceGame
-        'goldeye.name = "Goldeneye Source"
-        'goldeye.directory = "sourcemods\"
-        'goldeye.ToCfg = "gesource\cfg\"
-        'goldeye.libraryname = "goldeye\"
-        'Games.Add(goldeye)
-
-        Dim insurg As New SourceGame
-        insurg.name = "Insurgency"
-        insurg.directory = "common\insurgency2\"
-        insurg.ToCfg = "insurgency\cfg\"
-        insurg.libraryname = "insurgen\"
-        insurg.exename = "insurgency"
-        Games.Add(insurg)
+        Dim cs2 As New SourceGame
+        cs2.name = "Counter-Strike 2"
+        cs2.id = 730
+        cs2.directory = "common\Counter-Strike Global Offensive\" 'CS2 uses the same directory as CS:GO
+        cs2.ToCfg = "game\csgo\cfg\" 'CS2 uses the same cfg folder as CS:GO
+        cs2.libraryname = "game\csgo\" 'CS2 uses a different library folder
+        cs2.exename = "cs2"
+        cs2.samplerate = 22050 'CS2 uses a different sample rate than CS:GO
+        cs2.blacklist.AddRange({"attack", "attack2", "autobuy", "back", "buy", "buyammo1", "buyammo2", "buymenu", "callvote", "cancelselect", "cheer", "compliment", "coverme", "drop", "duck", "enemydown", "enemyspot", "fallback", "followme", "forward", "getout", "go", "holdpos", "inposition", "invnext", "invprev", "jump", "lastinv", "messagemode", "messagemode2", "moveleft", "moveright", "mute", "negative", "quit", "radio1", "radio2", "radio3", "rebuy", "regroup", "reload", "reporting_in", "reporting_in_team_only", "roger", "sectorclear", "showscores", "slot1", "slot10", "slot2", "slot3", "slot4", "slot5", "slot6", "slot7", "slot8", "slot9", "speed", "sticktog", "takepoint", "takingfire", "teammenu", "thanks", "toggleconsole", "use", "voicerecord"})
+        cs2.VoiceFadeOut = False 'CS2 does not fade out voice chat
+        Games.Add(cs2)
 
         For Each Game In Games
             GameSelector.Items.Add(Game.name)
@@ -365,57 +301,81 @@ Public Class Form1
     Private Sub CreateCfgFiles(Game As SourceGame, SteamappsPath As String)
         Dim GameDir As String = Path.Combine(SteamappsPath, Game.directory)
         Dim GameCfgFolder As String = Path.Combine(GameDir, Game.ToCfg)
+        Dim virtualMicOutName As String = "CABLE Output (VB-Audio Virtual Cable)"
+        Dim regularMicName As String = "Lapel Mic (Wireless microphone)"
+
+        If Not String.IsNullOrEmpty(My.Settings.VirtualMicOutDeviceName) Then
+            ' Extract just the device name part (after the colon and space)
+            Dim parts = My.Settings.VirtualMicOutDeviceName.Split(New Char() {":"c}, 2)
+            If parts.Length = 2 Then virtualMicOutName = parts(1).Trim()
+        End If
+        If Not String.IsNullOrEmpty(My.Settings.RegularMicDeviceName) Then
+            Dim parts = My.Settings.RegularMicDeviceName.Split(New Char() {":"c}, 2)
+            If parts.Length = 2 Then regularMicName = parts(1).Trim()
+        End If
 
         If Not IO.Directory.Exists(GameCfgFolder) Then
             Throw New System.Exception("Steamapps folder is incorrect. Disable ""override folder detection"", or select a correct folder.")
         End If
 
-        'slam.cfg
-        Using slam_cfg As StreamWriter = New StreamWriter(GameCfgFolder & "slam.cfg")
-            slam_cfg.WriteLine("alias slam_listtracks ""exec slam_tracklist.cfg""")
-            slam_cfg.WriteLine("alias list slam_listtracks")
-            slam_cfg.WriteLine("alias tracks slam_listtracks")
-            slam_cfg.WriteLine("alias la slam_listtracks")
-            slam_cfg.WriteLine("alias slam_play slam_play_on")
-            slam_cfg.WriteLine("alias slam_play_on ""alias slam_play slam_play_off; voice_inputfromfile 1; voice_loopback 1; +voicerecord""")
-            slam_cfg.WriteLine("alias slam_play_off ""-voicerecord; voice_inputfromfile 0; voice_loopback 0; alias slam_play slam_play_on""")
-            slam_cfg.WriteLine("alias slam_updatecfg ""host_writeconfig slam_relay""")
-            If My.Settings.HoldToPlay Then
-                slam_cfg.WriteLine("alias +slam_hold_play slam_play_on")
-                slam_cfg.WriteLine("alias -slam_hold_play slam_play_off")
-                slam_cfg.WriteLine("bind {0} +slam_hold_play", My.Settings.PlayKey)
-            Else
-                slam_cfg.WriteLine("bind {0} slam_play", My.Settings.PlayKey)
-            End If
-            slam_cfg.WriteLine("alias slam_curtrack ""exec slam_curtrack.cfg""")
-            slam_cfg.WriteLine("alias slam_saycurtrack ""exec slam_saycurtrack.cfg""")
-            slam_cfg.WriteLine("alias slam_sayteamcurtrack ""exec slam_sayteamcurtrack.cfg""")
+        ' Collect all lines for slam.cfg
+        Dim slamLines As New List(Of String)
+        slamLines.Add("alias slam_play slam_updatecfg;slam_play_on;")
+        slamLines.Add($"alias slam_play_on ""alias slam_play slam_play_off; slam_updatecfg; voice_loopback 1; voice_device_override {virtualMicOutName}; +voicerecord""")
+        slamLines.Add($"alias slam_play_off ""alias slam_play slam_play_on; -voicerecord; voice_loopback 0; voice_device_override {regularMicName};""")
+        slamLines.Add("alias slam_updatecfg ""host_writeconfig""")
+        If My.Settings.HoldToPlay Then
+            slamLines.Add(String.Format("alias +slam_hold_play slam_play_on"))
+            slamLines.Add(String.Format("alias -slam_hold_play slam_play_off"))
+            slamLines.Add(String.Format("bind {0} +slam_hold_play", My.Settings.PlayKey))
+        Else
+            slamLines.Add(String.Format("bind {0} slam_play", My.Settings.PlayKey))
+        End If
+        slamLines.Add("alias slam_curtrack ""exec slam_curtrack.cfg""")
+        slamLines.Add("alias slam_saycurtrack ""exec slam_saycurtrack.cfg""")
+        slamLines.Add("alias slam_sayteamcurtrack ""exec slam_sayteamcurtrack.cfg""")
 
-            For Each Track In Game.tracks
-                Dim index As String = Game.tracks.IndexOf(Track)
-                slam_cfg.WriteLine("alias {0} ""bind {1} {0}; slam_updatecfg; echo Loaded: {2}""", index + 1, My.Settings.RelayKey, Track.name)
-
-                For Each TrackTag In Track.tags
-                    slam_cfg.WriteLine("alias {0} ""bind {1} {2}; slam_updatecfg; echo Loaded: {3}""", TrackTag, My.Settings.RelayKey, index + 1, Track.name)
-                Next
-
-                If Not String.IsNullOrEmpty(Track.hotkey) Then
-                    slam_cfg.WriteLine("bind {0} ""bind {1} {2}; slam_updatecfg; echo Loaded: {3}""", Track.hotkey, My.Settings.RelayKey, index + 1, Track.name)
-                End If
+        For Each Track In Game.tracks
+            Dim index As String = Game.tracks.IndexOf(Track)
+            slamLines.Add(String.Format("alias {0} ""bind {1} {0};""", index + 1, My.Settings.RelayKey))
+            For Each TrackTag In Track.tags
+                slamLines.Add(String.Format("alias {0} ""bind {1} {2};""", TrackTag, My.Settings.RelayKey, index + 1))
             Next
-
-            Dim CfgData As String
-            CfgData = "voice_enable 1; voice_modenable 1; voice_forcemicrecord 0; con_enable 1"
-
-            If Game.VoiceFadeOut Then
-                CfgData = CfgData + "; voice_fadeouttime 0.0"
+            If Not String.IsNullOrEmpty(Track.hotkey) Then
+                slamLines.Add(String.Format("bind {0} ""bind {1} {2}; slam_updatecfg; slam_play_on; """, Track.hotkey, My.Settings.RelayKey, index + 1))
             End If
+        Next
 
-            slam_cfg.WriteLine(CfgData)
+        Dim CfgData As String = "voice_modenable 1; con_enable 1"
+        If Game.VoiceFadeOut Then
+            CfgData = CfgData + "; voice_fadeouttime 0.0"
+        End If
+        slamLines.Add(CfgData)
 
-        End Using
+        ' Write lines in chunks of 200
+        Dim fileIndex As Integer = 1
+        Dim totalLines As Integer = slamLines.Count
+        Dim writtenLines As Integer = 0
+        Dim nextCfgName As String = ""
 
-        'slam_tracklist.cfg
+        While writtenLines < totalLines
+            Dim linesToWrite = Math.Min(200, totalLines - writtenLines)
+            Dim fileName As String = If(fileIndex = 1, "slam.cfg", $"slam{fileIndex}.cfg")
+            Dim filePath As String = Path.Combine(GameCfgFolder, fileName)
+            Using writer As New StreamWriter(filePath, False)
+                For i = 0 To linesToWrite - 1
+                    writer.WriteLine(slamLines(writtenLines + i))
+                Next
+                writtenLines += linesToWrite
+                ' If there are more lines, add exec for next file
+                If writtenLines < totalLines Then
+                    nextCfgName = $"slam{fileIndex + 1}"
+                End If
+            End Using
+            fileIndex += 1
+        End While
+
+        ' slam_tracklist.cfg (unchanged)
         Using slam_tracklist_cfg As StreamWriter = New StreamWriter(GameCfgFolder & "slam_tracklist.cfg")
             slam_tracklist_cfg.WriteLine("echo ""You can select tracks either by typing a tag, or their track number.""")
             slam_tracklist_cfg.WriteLine("echo ""--------------------Tracks--------------------""")
@@ -429,60 +389,86 @@ Public Class Form1
             Next
             slam_tracklist_cfg.WriteLine("echo ""----------------------------------------------""")
         End Using
-
     End Sub
 
     Private Function LoadTrack(ByVal Game As SourceGame, ByVal index As Integer) As Boolean
         Dim Track As track
         If Game.tracks.Count > index Then
             Track = Game.tracks(index)
-            Dim voicefile As String = Path.Combine(SteamAppsPath, Game.directory) & "voice_input.wav"
+
             Try
-                If File.Exists(voicefile) Then
-                    File.Delete(voicefile)
+                ' Stop any currently playing audio
+                If currentWaveOut IsNot Nothing Then
+                    currentWaveOut.Stop()
+                    currentWaveOut.Dispose()
+                    currentWaveOut = Nothing
                 End If
 
                 Dim trackfile As String = Game.libraryname & Track.name & Game.FileExtension
                 If File.Exists(trackfile) Then
 
-                    If Track.volume = 100 And Track.startpos <= 0 And Track.endpos <= 0 Then
-                        File.Copy(trackfile, voicefile)
-                    Else
-
-                        If My.Settings.UseFFMPEG Then
-
-                            FFMPEG_ConvertAndTrim(trackfile, voicefile, Game.samplerate, Game.channels, Track.startpos / Game.samplerate / 2, (Track.endpos - Track.startpos) / Game.samplerate / 2, (Track.volume / 100) ^ 6) ' /2 because SLAM stores Track.startpos and Track.endpos as # of bytes not sample. With 16-bit audio, there are 2 bytes per sample.
-
-                        Else
-
-                            Dim WaveFloat As New WaveChannel32(New WaveFileReader(trackfile))
-
-                            If Not Track.volume = 100 Then
-                                WaveFloat.Volume = (Track.volume / 100) ^ 6
-                            End If
-
-                            If Not Track.startpos = Track.endpos And Track.endpos > 0 Then
-                                Dim bytes((Track.endpos - Track.startpos) * 4) As Byte
-
-                                WaveFloat.Position = Track.startpos * 4
-                                WaveFloat.Read(bytes, 0, (Track.endpos - Track.startpos) * 4)
-
-                                WaveFloat = New WaveChannel32(New RawSourceWaveStream(New MemoryStream(bytes), WaveFloat.WaveFormat))
-                            End If
-
-                            WaveFloat.PadWithZeroes = False
-                            Dim outFormat = New WaveFormat(Game.samplerate, Game.bits, Game.channels)
-                            Dim resampler = New MediaFoundationResampler(WaveFloat, outFormat)
-                            resampler.ResamplerQuality = 60
-                            WaveFileWriter.CreateWaveFile(voicefile, resampler) 'wav
-
-                            resampler.Dispose()
-                            WaveFloat.Dispose()
-
-                        End If
-
+                    ' Find virtual microphone device if not already found
+                    If virtualMicDeviceInIndex = -1 Then
+                        FindVirtualMicDevice()
                     End If
 
+                    If virtualMicDeviceInIndex = -1 Then
+                        MessageBox.Show("Virtual microphone device not found! Please install a virtual audio cable.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        Return False
+                    End If
+
+                    Debug.WriteLine($"Using device index: {virtualMicDeviceInIndex}")
+
+                    ' Load and prepare audio
+                    Dim audioReader As WaveStream
+
+                    Debug.WriteLine($"Loading track: {trackfile}")
+
+                    If Track.volume = 100 And Track.startpos <= 0 And Track.endpos <= 0 Then
+                        ' Simple case - just play the file as-is
+                        audioReader = New AudioFileReader(trackfile)
+                        Debug.WriteLine($"Simple playback - Format: {audioReader.WaveFormat}")
+                    Else
+                        ' Complex case - apply volume, trimming, etc.
+                        Dim WaveFloat As New WaveChannel32(New WaveFileReader(trackfile))
+
+                        If Not Track.volume = 100 Then
+                            WaveFloat.Volume = (Track.volume / 100) ^ 6
+                            Debug.WriteLine($"Applied volume: {Track.volume}%")
+                        End If
+
+                        If Not Track.startpos = Track.endpos And Track.endpos > 0 Then
+                            Dim bytes((Track.endpos - Track.startpos) * 4) As Byte
+                            WaveFloat.Position = Track.startpos * 4
+                            WaveFloat.Read(bytes, 0, (Track.endpos - Track.startpos) * 4)
+                            WaveFloat = New WaveChannel32(New RawSourceWaveStream(New MemoryStream(bytes), WaveFloat.WaveFormat))
+                            Debug.WriteLine($"Applied trimming: {Track.startpos} to {Track.endpos}")
+                        End If
+
+                        WaveFloat.PadWithZeroes = False
+                        audioReader = WaveFloat
+                        Debug.WriteLine($"Complex playback - Format: {audioReader.WaveFormat}")
+                    End If
+
+                    ' Play to virtual microphone device
+                    currentWaveOut = New WaveOut()
+                    currentWaveOut.DeviceNumber = virtualMicDeviceInIndex
+
+                    Try
+                        currentWaveOut.Init(audioReader)
+                        currentWaveOut.Play()
+                        Debug.WriteLine("Audio playback started successfully")
+
+                        ' Add event handler to know when playback stops
+                        AddHandler currentWaveOut.PlaybackStopped, New EventHandler(Of NAudio.Wave.StoppedEventArgs)(AddressOf OnPlaybackStopped)
+
+                    Catch ex As Exception
+                        Debug.WriteLine($"Playback error: {ex.Message}")
+                        LogError(ex)
+                        Return False
+                    End Try
+
+                    ' Update track info displays (keep existing functionality)
                     Dim GameCfgFolder As String = Path.Combine(SteamAppsPath, Game.directory, Game.ToCfg)
                     Using slam_curtrack As StreamWriter = New StreamWriter(GameCfgFolder & "slam_curtrack.cfg")
                         slam_curtrack.WriteLine("echo ""[SLAM] Track name: {0}""", Track.name)
@@ -493,7 +479,6 @@ Public Class Form1
                     Using slam_sayteamcurtrack As StreamWriter = New StreamWriter(GameCfgFolder & "slam_sayteamcurtrack.cfg")
                         slam_sayteamcurtrack.WriteLine("say_team ""[SLAM] Track name: {0}""", Track.name)
                     End Using
-
 
                 End If
 
@@ -509,9 +494,20 @@ Public Class Form1
         Return True
     End Function
 
-    Private Function recog(ByVal str As String, ByVal reg As String) As String
-        Dim keyd As Match = Regex.Match(str, reg, RegexOptions.IgnoreCase) 'RegexOptions.IgnoreCase because bind could be saved as lowercase
-        Return (keyd.Groups(1).ToString)
+    Private Function recog(ByVal str As String, ByVal key As String) As String
+        'Debug.WriteLine($"Searching for key: '{key}' in config")
+        'Debug.WriteLine($"Config content length: {str.Length}")
+
+        Dim newPattern As String = String.Format("""{0}""\s+""(.*?)""", key)
+        'Debug.WriteLine($"Trying new pattern: {newPattern}")
+        Dim newMatch As Match = Regex.Match(str, newPattern, RegexOptions.IgnoreCase)
+        If newMatch.Success Then
+            'Debug.WriteLine($"New format match found: {newMatch.Groups(1).ToString()}")
+            Return newMatch.Groups(1).ToString()
+        End If
+
+        'Debug.WriteLine("No match found for either pattern")
+        Return String.Empty
     End Function
 
     Private Sub PollRelayWorker_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles PollRelayWorker.DoWork
@@ -552,7 +548,6 @@ Public Class Form1
 
                     Thread.Sleep(Game.PollInterval)
                 Loop
-
             Else
                 SteamAppsPath = My.Settings.steamapps
                 If IO.Directory.Exists(My.Settings.userdata) Then
@@ -578,21 +573,27 @@ Public Class Form1
         Do While Not PollRelayWorker.CancellationPending
             Try
                 Dim GameFolder As String = Path.Combine(SteamAppsPath, Game.directory)
-                Dim GameCfg As String = Path.Combine(GameFolder, Game.ToCfg) & "slam_relay.cfg"
+                Dim GameCfg As String
 
-                If Not Game.id = 0 Then
-                    GameCfg = UserDataCFG(Game, UserDataPath)
-                End If
+
+                GameCfg = UserDataCFG(Game, UserDataPath)
+
+                'Debug.WriteLine("Polling for game config: " & GameCfg)
 
                 If File.Exists(GameCfg) Then
+                    Debug.WriteLine("Game Config Exists")
+
                     Dim RelayCfg As String
                     Using reader As StreamReader = New StreamReader(GameCfg)
                         RelayCfg = reader.ReadToEnd
                     End Using
 
-                    Dim command As String = recog(RelayCfg, String.Format("bind ""{0}"" ""(.*?)""", My.Settings.RelayKey))
+                    Dim command As String = recog(RelayCfg, My.Settings.RelayKey)
+
+                    Debug.WriteLine("Command: " & command)
+
                     If Not String.IsNullOrEmpty(command) Then
-                        'load audiofile
+                        ' Play audio to virtual microphone instead of copying file
                         If IsNumeric(command) Then
                             If LoadTrack(Game, Convert.ToInt32(command) - 1) Then
                                 PollRelayWorker.ReportProgress(Convert.ToInt32(command) - 1)
@@ -605,13 +606,20 @@ Public Class Form1
                 Thread.Sleep(Game.PollInterval)
 
             Catch ex As Exception
-                If Not ex.HResult = -2147024864 Then '-2147024864 = "System.IO.IOException: The process cannot access the file because it is being used by another process."
+                If Not ex.HResult = -2147024864 Then
                     LogError(ex)
                     e.Result = ex
                     Return
                 End If
             End Try
         Loop
+
+        ' Clean up audio when stopping
+        If currentWaveOut IsNot Nothing Then
+            currentWaveOut.Stop()
+            currentWaveOut.Dispose()
+            currentWaveOut = Nothing
+        End If
 
         If Not String.IsNullOrEmpty(SteamAppsPath) Then
             DeleteCFGs(Game, SteamAppsPath)
@@ -622,7 +630,7 @@ Public Class Form1
     Public Function UserDataCFG(Game As SourceGame, UserdataPath As String) As String
         If IO.Directory.Exists(UserdataPath) Then
             For Each userdir As String In System.IO.Directory.GetDirectories(UserdataPath)
-                Dim CFGPath As String = Path.Combine(userdir, Game.id.ToString) & "\local\cfg\slam_relay.cfg"
+                Dim CFGPath As String = Path.Combine(userdir, Game.id.ToString) & "\local\cfg\cs2_user_keys_0_slot0.vcfg"
                 If File.Exists(CFGPath) Then
                     Return CFGPath
                 End If
@@ -1127,4 +1135,160 @@ Public Class Form1
             Me.Close()
         End If
     End Sub
+
+    Private Sub FindVirtualMicDevice()
+        virtualMicDeviceInIndex = -1
+
+        For i As Integer = 0 To WaveOut.DeviceCount - 1
+            Try
+                Dim deviceInfo = WaveOut.GetCapabilities(i)
+                Dim deviceName As String = deviceInfo.ProductName.ToLower()
+
+                ' Look for common virtual audio cable names
+                If deviceName.Contains("CABLE Input") Or
+                   deviceName.Contains("voicemeeter") Then
+                    virtualMicDeviceInIndex = i
+                    Debug.WriteLine($"Found virtual mic device: {deviceInfo.ProductName} at index {i}")
+                    Exit For
+                End If
+            Catch ex As Exception
+                ' Skip devices that can't be accessed
+                Continue For
+            End Try
+        Next
+
+        ' If no virtual device found, show available devices for user to choose
+        If virtualMicDeviceInIndex = -1 Then
+            ShowAudioDeviceSelector()
+        End If
+    End Sub
+
+    Private Sub TestAudioPlayback()
+        Try
+            If virtualMicDeviceInIndex = -1 Then
+                FindVirtualMicDevice()
+            End If
+
+            If virtualMicDeviceInIndex >= 0 Then
+                ' Generate a test tone
+                Dim testSignal = New SignalGenerator()
+                testSignal.Gain = 0.2
+                testSignal.Frequency = 440
+                testSignal.Type = SignalGeneratorType.Sin
+
+                Dim testOut = New WaveOut()
+                testOut.DeviceNumber = virtualMicDeviceInIndex
+                testOut.Init(testSignal)
+                testOut.Play()
+
+                MessageBox.Show("Playing test tone for 3 seconds. You should hear a beep in your virtual microphone.", "Test Audio")
+
+                Threading.Thread.Sleep(3000)
+                testOut.Stop()
+                testOut.Dispose()
+
+                MessageBox.Show("Test complete. Did you hear the tone?", "Test Results")
+            Else
+                MessageBox.Show("No virtual microphone device selected!", "Error")
+            End If
+        Catch ex As Exception
+            MessageBox.Show($"Test failed: {ex.Message}", "Error")
+            LogError(ex)
+        End Try
+    End Sub
+
+    Private Sub OnPlaybackStopped(sender As Object, e As NAudio.Wave.StoppedEventArgs)
+        Debug.WriteLine("Playback stopped")
+        If e.Exception IsNot Nothing Then
+            Debug.WriteLine($"Playback stopped with error: {e.Exception.Message}")
+            LogError(e.Exception)
+        End If
+    End Sub
+
+    ' Add this function to let user manually select audio device
+    Private Sub ShowAudioDeviceSelector()
+        Dim deviceList As New List(Of String)
+
+        For i As Integer = 0 To WaveOut.DeviceCount - 1
+            Try
+                Dim deviceInfo = WaveOut.GetCapabilities(i)
+                deviceList.Add($"{i}: {deviceInfo.ProductName}")
+                Debug.WriteLine($"Device {i}: {deviceInfo.ProductName}")
+            Catch ex As Exception
+                deviceList.Add($"{i}: [Unavailable]")
+            End Try
+        Next
+
+        Dim selectedDevice As String = InputBox("Virtual microphone not found automatically. " & vbCrLf &
+                                               "Available audio devices:" & vbCrLf &
+                                               String.Join(vbCrLf, deviceList) & vbCrLf & vbCrLf &
+                                               "Enter the number of your virtual microphone device:",
+                                               "Select Audio Device", "0")
+
+        If IsNumeric(selectedDevice) Then
+            Dim deviceIndex As Integer = Convert.ToInt32(selectedDevice)
+            If deviceIndex >= 0 And deviceIndex < WaveOut.DeviceCount Then
+                virtualMicDeviceInIndex = deviceIndex
+                ' Save this setting for future use
+                My.Settings.VirtualMicInDevice = deviceIndex
+                My.Settings.Save()
+                Debug.WriteLine($"Selected device index: {deviceIndex}")
+            End If
+        End If
+    End Sub
+
+    Private Sub PopulateAudioDeviceDropdowns()
+        ' Populate output devices (for virtual cable) sound gets played INTO This
+        ComboBoxVirtualInCable.Items.Clear()
+        For i As Integer = 0 To WaveOut.DeviceCount - 1
+            Dim deviceInfo = WaveOut.GetCapabilities(i)
+            ComboBoxVirtualInCable.Items.Add($"{i}: {deviceInfo.ProductName}")
+        Next
+        If My.Settings.VirtualMicInDevice >= 0 AndAlso My.Settings.VirtualMicInDevice < ComboBoxVirtualInCable.Items.Count Then
+            ComboBoxVirtualInCable.SelectedIndex = My.Settings.VirtualMicInDevice
+        End If
+
+        ' Populate input devices (for real mic) sound comes OUT of this
+        ComboBoxVirtualOutCable.Items.Clear()
+        For i As Integer = 0 To WaveIn.DeviceCount - 1
+            Dim deviceInfo = WaveIn.GetCapabilities(i)
+            ComboBoxVirtualOutCable.Items.Add($"{i}: {deviceInfo.ProductName}")
+        Next
+        If My.Settings.VirtualMicOutDevice >= 0 AndAlso My.Settings.VirtualMicOutDevice < ComboBoxVirtualOutCable.Items.Count Then
+            ComboBoxVirtualOutCable.SelectedIndex = My.Settings.VirtualMicOutDevice
+        End If
+
+        ' Populate input devices (for real mic)
+        ComboBoxRegularMic.Items.Clear()
+        For i As Integer = 0 To WaveIn.DeviceCount - 1
+            Dim deviceInfo = WaveIn.GetCapabilities(i)
+            ComboBoxRegularMic.Items.Add($"{i}: {deviceInfo.ProductName}")
+        Next
+        If My.Settings.RegularMicDevice >= 0 AndAlso My.Settings.RegularMicDevice < ComboBoxRegularMic.Items.Count Then
+            ComboBoxRegularMic.SelectedIndex = My.Settings.RegularMicDevice
+        End If
+    End Sub
+
+    Private Sub ComboBoxVirtualInCable_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBoxVirtualInCable.SelectedIndexChanged
+        My.Settings.VirtualMicInDevice = ComboBoxVirtualInCable.SelectedIndex
+        virtualMicDeviceInIndex = ComboBoxVirtualInCable.SelectedIndex
+        My.Settings.Save()
+        Debug.Print($"Selected device index: {My.Settings.VirtualMicInDevice}")
+
+    End Sub
+
+    Private Sub ComboBoxVirtualOutCable_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBoxVirtualOutCable.SelectedIndexChanged
+        My.Settings.VirtualMicOutDevice = ComboBoxVirtualOutCable.SelectedIndex
+        My.Settings.VirtualMicOutDeviceName = ComboBoxVirtualOutCable.SelectedItem.ToString()
+        Debug.Print($"Selected device index: {My.Settings.VirtualMicOutDevice}")
+        My.Settings.Save()
+    End Sub
+
+    Private Sub ComboBoxRegularMic_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBoxRegularMic.SelectedIndexChanged
+        My.Settings.RegularMicDevice = ComboBoxRegularMic.SelectedIndex
+        My.Settings.RegularMicDeviceName = ComboBoxRegularMic.SelectedItem.ToString()
+        Debug.Print($"Selected device index: {My.Settings.RegularMicDevice}")
+        My.Settings.Save()
+    End Sub
+
 End Class

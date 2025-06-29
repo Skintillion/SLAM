@@ -59,6 +59,12 @@ Partial Class Form1
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.SystemTrayMenu_Exit = New System.Windows.Forms.ToolStripMenuItem()
         Me.YTButton = New System.Windows.Forms.Button()
+        Me.ComboBoxVirtualInCable = New System.Windows.Forms.ComboBox()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.ComboBoxRegularMic = New System.Windows.Forms.ComboBox()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.ComboBoxVirtualOutCable = New System.Windows.Forms.ComboBox()
+        Me.Label4 = New System.Windows.Forms.Label()
         Me.TrackContextMenu.SuspendLayout()
         Me.SystemTrayMenu.SuspendLayout()
         Me.SuspendLayout()
@@ -69,27 +75,30 @@ Partial Class Form1
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.GameSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.GameSelector.FormattingEnabled = True
-        Me.GameSelector.Location = New System.Drawing.Point(56, 12)
+        Me.GameSelector.Location = New System.Drawing.Point(103, 22)
+        Me.GameSelector.Margin = New System.Windows.Forms.Padding(6)
         Me.GameSelector.MaxDropDownItems = 100
         Me.GameSelector.Name = "GameSelector"
-        Me.GameSelector.Size = New System.Drawing.Size(435, 21)
+        Me.GameSelector.Size = New System.Drawing.Size(794, 32)
         Me.GameSelector.TabIndex = 0
         '
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(12, 15)
+        Me.Label1.Location = New System.Drawing.Point(22, 28)
+        Me.Label1.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(38, 13)
+        Me.Label1.Size = New System.Drawing.Size(71, 25)
         Me.Label1.TabIndex = 1
         Me.Label1.Text = "Game:"
         '
         'ImportButton
         '
         Me.ImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.ImportButton.Location = New System.Drawing.Point(15, 297)
+        Me.ImportButton.Location = New System.Drawing.Point(28, 850)
+        Me.ImportButton.Margin = New System.Windows.Forms.Padding(6)
         Me.ImportButton.Name = "ImportButton"
-        Me.ImportButton.Size = New System.Drawing.Size(54, 23)
+        Me.ImportButton.Size = New System.Drawing.Size(99, 42)
         Me.ImportButton.TabIndex = 3
         Me.ImportButton.Text = "Import"
         Me.ImportButton.UseVisualStyleBackColor = True
@@ -104,9 +113,10 @@ Partial Class Form1
         Me.TrackList.FullRowSelect = True
         Me.TrackList.HideSelection = False
         Me.TrackList.ImeMode = System.Windows.Forms.ImeMode.Off
-        Me.TrackList.Location = New System.Drawing.Point(15, 39)
+        Me.TrackList.Location = New System.Drawing.Point(28, 72)
+        Me.TrackList.Margin = New System.Windows.Forms.Padding(6)
         Me.TrackList.Name = "TrackList"
-        Me.TrackList.Size = New System.Drawing.Size(557, 252)
+        Me.TrackList.Size = New System.Drawing.Size(1018, 702)
         Me.TrackList.TabIndex = 4
         Me.TrackList.UseCompatibleStateImageBehavior = False
         Me.TrackList.View = System.Windows.Forms.View.Details
@@ -141,9 +151,10 @@ Partial Class Form1
         'StartButton
         '
         Me.StartButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.StartButton.Location = New System.Drawing.Point(96, 297)
+        Me.StartButton.Location = New System.Drawing.Point(176, 850)
+        Me.StartButton.Margin = New System.Windows.Forms.Padding(6)
         Me.StartButton.Name = "StartButton"
-        Me.StartButton.Size = New System.Drawing.Size(75, 23)
+        Me.StartButton.Size = New System.Drawing.Size(138, 42)
         Me.StartButton.TabIndex = 5
         Me.StartButton.Text = "Start"
         Me.StartButton.UseVisualStyleBackColor = True
@@ -159,9 +170,10 @@ Partial Class Form1
         '
         Me.ProgressBar1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ProgressBar1.Location = New System.Drawing.Point(15, 326)
+        Me.ProgressBar1.Location = New System.Drawing.Point(28, 904)
+        Me.ProgressBar1.Margin = New System.Windows.Forms.Padding(6)
         Me.ProgressBar1.Name = "ProgressBar1"
-        Me.ProgressBar1.Size = New System.Drawing.Size(557, 23)
+        Me.ProgressBar1.Size = New System.Drawing.Size(1021, 42)
         Me.ProgressBar1.Step = 1
         Me.ProgressBar1.TabIndex = 6
         '
@@ -177,9 +189,10 @@ Partial Class Form1
         'ChangeDirButton
         '
         Me.ChangeDirButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ChangeDirButton.Location = New System.Drawing.Point(497, 10)
+        Me.ChangeDirButton.Location = New System.Drawing.Point(911, 18)
+        Me.ChangeDirButton.Margin = New System.Windows.Forms.Padding(6)
         Me.ChangeDirButton.Name = "ChangeDirButton"
-        Me.ChangeDirButton.Size = New System.Drawing.Size(75, 23)
+        Me.ChangeDirButton.Size = New System.Drawing.Size(138, 42)
         Me.ChangeDirButton.TabIndex = 7
         Me.ChangeDirButton.Text = "Settings"
         Me.ChangeDirButton.UseVisualStyleBackColor = True
@@ -189,68 +202,69 @@ Partial Class Form1
         Me.TrackContextMenu.ImageScalingSize = New System.Drawing.Size(24, 24)
         Me.TrackContextMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ContextDelete, Me.GoToToolStripMenuItem, Me.ContextRefresh, Me.RemoveHotkeyToolStripMenuItem, Me.RenameToolStripMenuItem, Me.ContextHotKey, Me.SetVolumeToolStripMenuItem, Me.TrimToolStripMenuItem, Me.LoadToolStripMenuItem})
         Me.TrackContextMenu.Name = "TrackContextMenu"
-        Me.TrackContextMenu.Size = New System.Drawing.Size(145, 202)
+        Me.TrackContextMenu.Size = New System.Drawing.Size(208, 328)
         '
         'ContextDelete
         '
         Me.ContextDelete.Name = "ContextDelete"
-        Me.ContextDelete.Size = New System.Drawing.Size(144, 22)
+        Me.ContextDelete.Size = New System.Drawing.Size(207, 36)
         Me.ContextDelete.Text = "Delete"
         '
         'GoToToolStripMenuItem
         '
         Me.GoToToolStripMenuItem.Name = "GoToToolStripMenuItem"
-        Me.GoToToolStripMenuItem.Size = New System.Drawing.Size(144, 22)
+        Me.GoToToolStripMenuItem.Size = New System.Drawing.Size(207, 36)
         Me.GoToToolStripMenuItem.Text = "Go To"
         '
         'ContextRefresh
         '
         Me.ContextRefresh.Name = "ContextRefresh"
-        Me.ContextRefresh.Size = New System.Drawing.Size(144, 22)
+        Me.ContextRefresh.Size = New System.Drawing.Size(207, 36)
         Me.ContextRefresh.Text = "Refresh"
         '
         'RemoveHotkeyToolStripMenuItem
         '
         Me.RemoveHotkeyToolStripMenuItem.Name = "RemoveHotkeyToolStripMenuItem"
-        Me.RemoveHotkeyToolStripMenuItem.Size = New System.Drawing.Size(144, 22)
+        Me.RemoveHotkeyToolStripMenuItem.Size = New System.Drawing.Size(207, 36)
         Me.RemoveHotkeyToolStripMenuItem.Text = "Remove Bind"
         '
         'RenameToolStripMenuItem
         '
         Me.RenameToolStripMenuItem.Name = "RenameToolStripMenuItem"
-        Me.RenameToolStripMenuItem.Size = New System.Drawing.Size(144, 22)
+        Me.RenameToolStripMenuItem.Size = New System.Drawing.Size(207, 36)
         Me.RenameToolStripMenuItem.Text = "Rename"
         '
         'ContextHotKey
         '
         Me.ContextHotKey.Name = "ContextHotKey"
-        Me.ContextHotKey.Size = New System.Drawing.Size(144, 22)
+        Me.ContextHotKey.Size = New System.Drawing.Size(207, 36)
         Me.ContextHotKey.Text = "Set Bind"
         '
         'SetVolumeToolStripMenuItem
         '
         Me.SetVolumeToolStripMenuItem.Name = "SetVolumeToolStripMenuItem"
-        Me.SetVolumeToolStripMenuItem.Size = New System.Drawing.Size(144, 22)
+        Me.SetVolumeToolStripMenuItem.Size = New System.Drawing.Size(207, 36)
         Me.SetVolumeToolStripMenuItem.Text = "Set Volume"
         '
         'TrimToolStripMenuItem
         '
         Me.TrimToolStripMenuItem.Name = "TrimToolStripMenuItem"
-        Me.TrimToolStripMenuItem.Size = New System.Drawing.Size(144, 22)
+        Me.TrimToolStripMenuItem.Size = New System.Drawing.Size(207, 36)
         Me.TrimToolStripMenuItem.Text = "Trim"
         '
         'LoadToolStripMenuItem
         '
         Me.LoadToolStripMenuItem.Name = "LoadToolStripMenuItem"
-        Me.LoadToolStripMenuItem.Size = New System.Drawing.Size(144, 22)
+        Me.LoadToolStripMenuItem.Size = New System.Drawing.Size(207, 36)
         Me.LoadToolStripMenuItem.Text = "Load"
         '
         'PlayKeyButton
         '
         Me.PlayKeyButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.PlayKeyButton.Location = New System.Drawing.Point(380, 297)
+        Me.PlayKeyButton.Location = New System.Drawing.Point(697, 850)
+        Me.PlayKeyButton.Margin = New System.Windows.Forms.Padding(6)
         Me.PlayKeyButton.Name = "PlayKeyButton"
-        Me.PlayKeyButton.Size = New System.Drawing.Size(192, 23)
+        Me.PlayKeyButton.Size = New System.Drawing.Size(352, 42)
         Me.PlayKeyButton.TabIndex = 8
         Me.PlayKeyButton.Text = "Play key: """"{0}"""" (change)"
         Me.PlayKeyButton.UseVisualStyleBackColor = True
@@ -259,9 +273,10 @@ Partial Class Form1
         '
         Me.StatusLabel.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.StatusLabel.AutoSize = True
-        Me.StatusLabel.Location = New System.Drawing.Point(177, 302)
+        Me.StatusLabel.Location = New System.Drawing.Point(324, 860)
+        Me.StatusLabel.Margin = New System.Windows.Forms.Padding(6, 0, 6, 0)
         Me.StatusLabel.Name = "StatusLabel"
-        Me.StatusLabel.Size = New System.Drawing.Size(60, 13)
+        Me.StatusLabel.Size = New System.Drawing.Size(110, 25)
         Me.StatusLabel.TabIndex = 9
         Me.StatusLabel.Text = "Status: Idle"
         '
@@ -273,48 +288,113 @@ Partial Class Form1
         '
         'SystemTrayMenu
         '
+        Me.SystemTrayMenu.ImageScalingSize = New System.Drawing.Size(28, 28)
         Me.SystemTrayMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SystemTrayMenu_Open, Me.SystemTrayMenu_StartStop, Me.ToolStripSeparator1, Me.SystemTrayMenu_Exit})
         Me.SystemTrayMenu.Name = "SystemTrayMenu"
-        Me.SystemTrayMenu.Size = New System.Drawing.Size(104, 76)
+        Me.SystemTrayMenu.Size = New System.Drawing.Size(138, 118)
         '
         'SystemTrayMenu_Open
         '
         Me.SystemTrayMenu_Open.Name = "SystemTrayMenu_Open"
-        Me.SystemTrayMenu_Open.Size = New System.Drawing.Size(103, 22)
+        Me.SystemTrayMenu_Open.Size = New System.Drawing.Size(137, 36)
         Me.SystemTrayMenu_Open.Text = "Open"
         '
         'SystemTrayMenu_StartStop
         '
         Me.SystemTrayMenu_StartStop.Name = "SystemTrayMenu_StartStop"
-        Me.SystemTrayMenu_StartStop.Size = New System.Drawing.Size(103, 22)
+        Me.SystemTrayMenu_StartStop.Size = New System.Drawing.Size(137, 36)
         Me.SystemTrayMenu_StartStop.Text = "Start"
         '
         'ToolStripSeparator1
         '
         Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(100, 6)
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(134, 6)
         '
         'SystemTrayMenu_Exit
         '
         Me.SystemTrayMenu_Exit.Name = "SystemTrayMenu_Exit"
-        Me.SystemTrayMenu_Exit.Size = New System.Drawing.Size(103, 22)
+        Me.SystemTrayMenu_Exit.Size = New System.Drawing.Size(137, 36)
         Me.SystemTrayMenu_Exit.Text = "Exit"
         '
         'YTButton
         '
         Me.YTButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.YTButton.Image = CType(resources.GetObject("YTButton.Image"), System.Drawing.Image)
-        Me.YTButton.Location = New System.Drawing.Point(68, 297)
+        Me.YTButton.Location = New System.Drawing.Point(125, 850)
+        Me.YTButton.Margin = New System.Windows.Forms.Padding(6)
         Me.YTButton.Name = "YTButton"
-        Me.YTButton.Size = New System.Drawing.Size(22, 23)
+        Me.YTButton.Size = New System.Drawing.Size(40, 42)
         Me.YTButton.TabIndex = 10
         Me.YTButton.UseVisualStyleBackColor = True
         '
+        'ComboBoxVirtualInCable
+        '
+        Me.ComboBoxVirtualInCable.Anchor = System.Windows.Forms.AnchorStyles.Bottom
+        Me.ComboBoxVirtualInCable.FormattingEnabled = True
+        Me.ComboBoxVirtualInCable.Location = New System.Drawing.Point(30, 809)
+        Me.ComboBoxVirtualInCable.Name = "ComboBoxVirtualInCable"
+        Me.ComboBoxVirtualInCable.Size = New System.Drawing.Size(335, 32)
+        Me.ComboBoxVirtualInCable.TabIndex = 11
+        '
+        'Label2
+        '
+        Me.Label2.Anchor = System.Windows.Forms.AnchorStyles.Bottom
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(35, 780)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(94, 25)
+        Me.Label2.TabIndex = 12
+        Me.Label2.Text = "Virtual In:"
+        '
+        'ComboBoxRegularMic
+        '
+        Me.ComboBoxRegularMic.Anchor = System.Windows.Forms.AnchorStyles.Bottom
+        Me.ComboBoxRegularMic.FormattingEnabled = True
+        Me.ComboBoxRegularMic.Location = New System.Drawing.Point(715, 809)
+        Me.ComboBoxRegularMic.Name = "ComboBoxRegularMic"
+        Me.ComboBoxRegularMic.Size = New System.Drawing.Size(335, 32)
+        Me.ComboBoxRegularMic.TabIndex = 13
+        '
+        'Label3
+        '
+        Me.Label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(719, 781)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(49, 25)
+        Me.Label3.TabIndex = 14
+        Me.Label3.Text = "Mic:"
+        '
+        'ComboBoxVirtualOutCable
+        '
+        Me.ComboBoxVirtualOutCable.Anchor = System.Windows.Forms.AnchorStyles.Bottom
+        Me.ComboBoxVirtualOutCable.FormattingEnabled = True
+        Me.ComboBoxVirtualOutCable.Location = New System.Drawing.Point(373, 809)
+        Me.ComboBoxVirtualOutCable.Name = "ComboBoxVirtualOutCable"
+        Me.ComboBoxVirtualOutCable.Size = New System.Drawing.Size(335, 32)
+        Me.ComboBoxVirtualOutCable.TabIndex = 15
+        '
+        'Label4
+        '
+        Me.Label4.Anchor = System.Windows.Forms.AnchorStyles.Bottom
+        Me.Label4.AutoSize = True
+        Me.Label4.Location = New System.Drawing.Point(378, 780)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(110, 25)
+        Me.Label4.TabIndex = 16
+        Me.Label4.Text = "Virtual Out:"
+        '
         'Form1
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(11.0!, 24.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(584, 361)
+        Me.ClientSize = New System.Drawing.Size(1071, 952)
+        Me.Controls.Add(Me.Label4)
+        Me.Controls.Add(Me.ComboBoxVirtualOutCable)
+        Me.Controls.Add(Me.Label3)
+        Me.Controls.Add(Me.ComboBoxRegularMic)
+        Me.Controls.Add(Me.Label2)
+        Me.Controls.Add(Me.ComboBoxVirtualInCable)
         Me.Controls.Add(Me.YTButton)
         Me.Controls.Add(Me.StatusLabel)
         Me.Controls.Add(Me.PlayKeyButton)
@@ -326,7 +406,8 @@ Partial Class Form1
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.GameSelector)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        Me.MinimumSize = New System.Drawing.Size(500, 400)
+        Me.Margin = New System.Windows.Forms.Padding(6)
+        Me.MinimumSize = New System.Drawing.Size(897, 684)
         Me.Name = "Form1"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Source Live Audio Mixer"
@@ -371,4 +452,10 @@ Partial Class Form1
     Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
     Friend WithEvents SystemTrayMenu_Exit As ToolStripMenuItem
     Friend WithEvents YTButton As Button
+    Friend WithEvents ComboBoxVirtualInCable As ComboBox
+    Friend WithEvents Label2 As Label
+    Friend WithEvents ComboBoxRegularMic As ComboBox
+    Friend WithEvents Label3 As Label
+    Friend WithEvents ComboBoxVirtualOutCable As ComboBox
+    Friend WithEvents Label4 As Label
 End Class
