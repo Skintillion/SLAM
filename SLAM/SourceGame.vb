@@ -12,7 +12,7 @@
     Public bits As Integer = 16
     Public channels As Integer = 1
 
-    Public PollInterval As Integer = 100
+    Public PollInterval As Integer = 50
 
     Public tracks As New List(Of Track)
     Public blacklist As New List(Of String) From {"slam", "slam_listtracks", "list", "tracks", "la", "slam_play", "slam_play_on", "slam_play_off", "slam_updatecfg", "slam_curtrack", "slam_saycurtrack", "slam_sayteamcurtrack"}

@@ -9,8 +9,13 @@ Imports System.Management
 Imports System.Net.Http
 Imports NReco.VideoConverter
 Imports NAudio.Wave.SampleProviders
+Imports NAudio.CoreAudioApi
+
+
 
 Public Class Form1
+
+    Dim enumerator As New MMDeviceEnumerator()
 
     Dim Games As New List(Of SourceGame)
     Dim running As Boolean = False
@@ -320,6 +325,8 @@ Public Class Form1
 
         ' Collect all lines for slam.cfg
         Dim slamLines As New List(Of String)
+        Debug.Print($"voice_device_override {virtualMicOutName};")
+        Debug.Print($"voice_device_override {regularMicName};")
         slamLines.Add("alias slam_play slam_updatecfg;slam_play_on;")
         slamLines.Add($"alias slam_play_on ""alias slam_play slam_play_off; slam_updatecfg; voice_loopback 1; voice_device_override {virtualMicOutName}; +voicerecord""")
         slamLines.Add($"alias slam_play_off ""alias slam_play slam_play_on; -voicerecord; voice_loopback 0; voice_device_override {regularMicName};""")
@@ -1250,20 +1257,17 @@ Public Class Form1
 
         ' Populate input devices (for real mic) sound comes OUT of this
         ComboBoxVirtualOutCable.Items.Clear()
-        For i As Integer = 0 To WaveIn.DeviceCount - 1
-            Dim deviceInfo = WaveIn.GetCapabilities(i)
-            ComboBoxVirtualOutCable.Items.Add($"{i}: {deviceInfo.ProductName}")
+        ComboBoxRegularMic.Items.Clear()
+
+        For Each device In enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active)
+            Debug.WriteLine($"Virtual Out Device: {device.FriendlyName}")
+            ComboBoxVirtualOutCable.Items.Add($"{device.FriendlyName}")
+            ComboBoxRegularMic.Items.Add($"{device.FriendlyName}")
         Next
+
         If My.Settings.VirtualMicOutDevice >= 0 AndAlso My.Settings.VirtualMicOutDevice < ComboBoxVirtualOutCable.Items.Count Then
             ComboBoxVirtualOutCable.SelectedIndex = My.Settings.VirtualMicOutDevice
         End If
-
-        ' Populate input devices (for real mic)
-        ComboBoxRegularMic.Items.Clear()
-        For i As Integer = 0 To WaveIn.DeviceCount - 1
-            Dim deviceInfo = WaveIn.GetCapabilities(i)
-            ComboBoxRegularMic.Items.Add($"{i}: {deviceInfo.ProductName}")
-        Next
         If My.Settings.RegularMicDevice >= 0 AndAlso My.Settings.RegularMicDevice < ComboBoxRegularMic.Items.Count Then
             ComboBoxRegularMic.SelectedIndex = My.Settings.RegularMicDevice
         End If
@@ -1280,7 +1284,9 @@ Public Class Form1
     Private Sub ComboBoxVirtualOutCable_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBoxVirtualOutCable.SelectedIndexChanged
         My.Settings.VirtualMicOutDevice = ComboBoxVirtualOutCable.SelectedIndex
         My.Settings.VirtualMicOutDeviceName = ComboBoxVirtualOutCable.SelectedItem.ToString()
+
         Debug.Print($"Selected device index: {My.Settings.VirtualMicOutDevice}")
+        Debug.Print($"Selected device name: {My.Settings.VirtualMicOutDeviceName}")
         My.Settings.Save()
     End Sub
 
@@ -1288,6 +1294,7 @@ Public Class Form1
         My.Settings.RegularMicDevice = ComboBoxRegularMic.SelectedIndex
         My.Settings.RegularMicDeviceName = ComboBoxRegularMic.SelectedItem.ToString()
         Debug.Print($"Selected device index: {My.Settings.RegularMicDevice}")
+        Debug.Print($"Selected device name: {My.Settings.RegularMicDeviceName}")
         My.Settings.Save()
     End Sub
 
