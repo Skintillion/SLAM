@@ -1,3 +1,17 @@
+# CS2 Update
+
+This new version uses sound injection through a Virtual Cable (you will need to install one). As well, CS2 limits the commands per script, so if you add a lot of sounds you will need to do 
+
+```
+exec slam
+exec slam2
+exec slam3
+exec slam4
+```
+
+and so on depending on how many sounds (each command can do about 200 sounds).
+
+
 # SLAM
 
 [Source Live Audio Mixer home page](http://slam.flankers.net/)
