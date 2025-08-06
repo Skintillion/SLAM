@@ -310,14 +310,12 @@ Public Class Form1
         Dim regularMicName As String = "Lapel Mic (Wireless microphone)"
 
         If Not String.IsNullOrEmpty(My.Settings.VirtualMicOutDeviceName) Then
-            ' Extract just the device name part (after the colon and space)
-            Dim parts = My.Settings.VirtualMicOutDeviceName.Split(New Char() {":"c}, 2)
-            If parts.Length = 2 Then virtualMicOutName = parts(1).Trim()
+            virtualMicOutName = My.Settings.VirtualMicOutDeviceName.Trim()
         End If
         If Not String.IsNullOrEmpty(My.Settings.RegularMicDeviceName) Then
-            Dim parts = My.Settings.RegularMicDeviceName.Split(New Char() {":"c}, 2)
-            If parts.Length = 2 Then regularMicName = parts(1).Trim()
+            regularMicName = My.Settings.RegularMicDeviceName.Trim()
         End If
+
 
         If Not IO.Directory.Exists(GameCfgFolder) Then
             Throw New System.Exception("Steamapps folder is incorrect. Disable ""override folder detection"", or select a correct folder.")
