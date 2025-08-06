@@ -1,3 +1,17 @@
+# CS2 Update
+
+This new version uses sound injection through a Virtual Cable (you will need to install one). As well, CS2 limits the commands per script, so if you add a lot of sounds you will need to do 
+
+```
+exec slam
+exec slam2
+exec slam3
+exec slam4
+```
+
+and so on depending on how many sounds (each command can do about 200 sounds).
+
+
 # SLAM
 
 [Source Live Audio Mixer home page](http://slam.flankers.net/)
@@ -13,7 +27,7 @@ Current features:
 - Select tracks either by their track number, or tags.
 - Import multiple media files at once with the click of a button (.mp3, .wav, .aac, .wma, .m4a, .mp4, .wmv, .avi, .m4v, and .mov file types).
 - Import tracks by YouTube URL.
-- Support for multiple games, such as: Counter-Strike: Global Offensive (CS:GO), Counter-Strike: Source (CS:S), and Team Fortress 2 (TF2)
+- Support for CS2 only
 - Create binds to load specific songs.
 - Change track volume on the go.
 - Trim tracks on the go.
